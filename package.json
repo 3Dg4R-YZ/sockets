@@ -1,0 +1,43 @@
+{
+  "name": "rentas-habana",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "dev": "nodemon index.js",
+    "start": "node index.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/3Dg4R-YZ/lamasia-backend.git"
+  },
+  "author": "Edgar Davian Maragoto Yanez - 3Dg4R-YZ",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/3Dg4R-YZ/lamasia-backend/issues"
+  },
+  "homepage": "https://github.com/3Dg4R-YZ/lamasia-backend#readme",
+  "description": "",
+  "dependencies": {
+    "bcryptjs": "^2.4.3",
+    "cors": "2.8.5",
+    "dotenv": "16.3.1",
+    "ejs": "^3.1.10",
+    "express": "^4.19.2",
+    "express-async-errors": "^3.1.1",
+    "express-fileupload": "^1.5.0",
+    "jsonwebtoken": "^9.0.2",
+    "morgan": "1.10.0",
+    "multer": "^1.4.5-lts.1",
+    "mysql2": "^3.7.1",
+    "socket.io": "^4.7.5",
+    "zod": "3.22.4"
+  },
+  "devDependencies": {
+    "nodemon": "3.0.3",
+    "standard": "17.1.0"
+  },
+  "eslintConfig": {
+    "extends": "standard"
+  }
+}

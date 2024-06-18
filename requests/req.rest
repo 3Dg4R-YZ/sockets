@@ -1,0 +1,18 @@
+### Obtener todas las personas
+GET http://localhost:3001/api/persons
+
+### 
+POST http://localhost:3001/api/persons
+Content-Type: application/json
+
+{
+  "name": "Edgar",
+  "number": "56677784"
+}
+
+### Obtener una persona en especifico
+GET http://localhost:3001/api/persons/65a49fa2cb159547057effc9
+
+### Eliminar una persona
+DELETE http://localhost:3001/api/persons/65a5b3c78b79459f3403ec33
+
