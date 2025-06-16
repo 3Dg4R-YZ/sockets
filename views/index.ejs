@@ -3,46 +3,214 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Document</title>
+    <title>Walmchat</title>
+
+    <style>
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+        color: #fff;
+      }
+
+      body {
+        font-family: Helvetica, Arial, sans-serif;
+        background-color: #0e1621;
+        color: #333;
+        min-height: 100vh;
+      }
+
+      #content {
+        margin: 10px;
+        line-height: 1.5;
+      }
+
+      .space {
+        position: static;
+        width: 100%;
+        height: 60px;
+      }
+
+      .space::after {
+        content: '';
+        display: block;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 60px;
+
+        background: #0e1621;
+        /* background-color: red; */
+      }
+
+      .space--2::after {
+        top: auto;
+        bottom: 0;
+      }
+
+      input {
+        font-size: 16px;
+        background-color: #17212b;
+        color: #fff;
+      }
+
+      input:focus {
+        outline: 1px solid #007bff;
+        border-color: #007bff !important;
+      }
+
+      input::placeholder {
+        color: #ccc;
+      }
+
+      label {
+        z-index: 1;
+      }
+
+      .user--label {
+        position: fixed;
+        top: 10px;
+        left: 10px;
+        width: calc(100% - 20px);
+        display: flex;
+      }
+
+      #user {
+        padding: 10px;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        flex: 1;
+      }
+
+      .message--label {
+        position: fixed;
+        bottom: 10px;
+        left: 10px;
+        display: flex;
+        width: calc(100% - 20px);
+      }
+
+      #message {
+        flex: 1;
+        max-width: calc(100% - 50px);
+        padding: 10px;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        font-size: 16px;
+      }
+
+      #btn-emit-event {
+        position: absolute;
+        right: 5px;
+        top: 2px;
+        border: none;
+        background: transparent;
+        padding: 5px;
+      }
+
+      #notification {
+        position: fixed;
+        top: 55px;
+        left: 10px;
+        color: #007bff;
+        z-index: 100;
+      }
+    </style>
   </head>
   <body>
-    <div id="new-connection"></div>
-    <label>
-      <input type="text" id="user" placeholder="Usuario" autocomplete="off" />
+    <label class="user--label">
+      <input type="text" id="user" placeholder="Nombre:" autocomplete="off" />
     </label>
-    <label>
-      Ingrese la información:
-      <input type="text" id="info" />
-    </label>
-    <input type="button" value="Emitir evento" id="btn-emit-event" />
+    <div class="space space--1"></div>
+
+    <div id="notification"></div>
+    <div id="writing"></div>
     <div id="content"></div>
+
+    <label class="message--label">
+      <input type="text" id="message" />
+      <button id="btn-emit-event">
+        <svg width="24" height="24" fill="#fff" viewBox="0 0 32 32">
+          <path
+            d="M30.65 16.353c0.063-0.1 0.1-0.222 0.1-0.353s-0.037-0.252-0.102-0.356l0.002 0.003c-0.018-0.031-0.036-0.057-0.055-0.082l0.001 0.002c-0.059-0.081-0.132-0.149-0.217-0.199l-0.003-0.002c-0.016-0.010-0.023-0.028-0.040-0.036l-28.001-14c-0.098-0.050-0.213-0.079-0.335-0.079-0.414 0-0.75 0.336-0.75 0.75 0 0.107 0.022 0.209 0.063 0.301l-0.002-0.005 5.873 13.704-5.873 13.705c-0.038 0.087-0.060 0.188-0.060 0.294 0 0.414 0.336 0.75 0.75 0.75h0c0.001 0 0.002 0 0.003 0 0.121 0 0.236-0.030 0.336-0.082l-0.004 0.002 28.001-13.999c0.017-0.008 0.024-0.027 0.040-0.036 0.088-0.053 0.161-0.12 0.219-0.199l0.001-0.002c0.018-0.023 0.036-0.050 0.052-0.077l0.002-0.003zM3.496 3.587l23.326 11.663h-18.327zM8.495 16.75h18.328l-23.326 11.664z"
+          ></path>
+        </svg>
+      </button>
+    </label>
+    <div class="space space--2"></div>
+
     <script src="/socket.io/socket.io.js"></script>
     <script>
       const socket = io()
-      const info = document.getElementById('info')
       const user = document.getElementById('user')
+      const message = document.getElementById('message')
       const btnEmitEvent = document.getElementById('btn-emit-event')
+
       const content = document.getElementById('content')
+      const writing = document.getElementById('writing')
+      const notification = document.getElementById('notification')
+
+      //Carga inicial del user
+      const previousSession = localStorage.getItem('user')
+      if (previousSession) {
+        user.value = previousSession
+      }
 
       btnEmitEvent.addEventListener('click', (ev) => {
-        console.log(info.value)
+        if (user.value == '' || message.value == '') return
         socket.emit('add-information', {
           user: user.value,
-          info: info.value
+          message: message.value,
         })
-        info.value = ''
+        message.value = ''
       })
 
       socket.on('new-connection', (message) => {
-        const newConnection = document.getElementById('new-connection')
-        newConnection.innerHTML = message
+        notification.innerHTML = message
         setTimeout(() => {
-          newConnection.innerHTML = ''
+          notification.innerHTML = ''
         }, 3000)
       })
 
       socket.on('show-information', (data) => {
-        content.innerHTML += `${data.user}: ${data.info}<br/>`
+        content.innerHTML += `${data.user}: ${data.message}<br/>`
+      })
+
+      //Evento para carga inicial de los mensajes
+      socket.on('all-messages', (messages) => {
+        let newContent = ''
+        for (const message of messages) {
+          newContent += `
+          <div class="message">
+            ${message.username}: ${message.message}
+          </div>
+          </br>
+        `
+          content.innerHTML = newContent
+          content.scrollTo = content.scrollHeight
+        }
+      })
+
+      //Evento para que los demas sepan que estas escribiendo
+      message.addEventListener('keydown', (ev) => {
+        socket.emit('writing', user.value)
+      })
+
+      socket.on('writing', () => {
+        notification.innerHTML = user.value + ' esta escribiendo'
+        setTimeout(() => {
+          notification.innerHTML = ''
+        }, 1500)
+      })
+
+      message.addEventListener('keyup', (ev) => {
+        if (ev.code == 'Enter') btnEmitEvent.click()
+      })
+
+      //Evento para guardar user
+      user.addEventListener('blur', (ev) => {
+        localStorage.setItem('user', user.value)
       })
     </script>
   </body>

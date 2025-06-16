@@ -3,7 +3,6 @@ module.exports = (io) => {
     console.log('Se ha conectado un nuevo cliente')
 
     socket.on('add-information', (data) => {
-      console.log(data)
       io.emit('show-information', data)
     })
 
@@ -11,6 +10,10 @@ module.exports = (io) => {
 
     socket.on('disconnect', () => {
       console.log('El cliente se ha desconectado')
+    })
+
+    socket.on('writing', (username) => {
+      socket.broadcast.emit('writing', username)
     })
   })
 }
